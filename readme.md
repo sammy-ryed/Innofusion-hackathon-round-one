@@ -1,192 +1,88 @@
-# 🛒 E-Commerce Consumer Behavior Analysis
 
-## 📊 Project Overview
+# E-Commerce Consumer Behavior Analysis
 
-Advanced ML-powered analysis of 1,000 e-commerce customers to predict discount usage patterns and generate actionable business insights through 10 professional visualizations.
+This project analyzes consumer behavior in an e-commerce context to understand purchasing patterns, identify key influencing factors, and build a predictive model for discount usage. The analysis involves comprehensive data cleaning, exploratory data visualization, and a machine learning pipeline to predict whether a customer will use a discount.
 
----
+## Data Cleaning Summary
 
-## 🎯 Key Objectives
+The initial dataset underwent several cleaning steps to ensure data quality and prepare it for analysis and modeling:
+- **Purchase_Amount**: Converted from string (e.g., '$123.45') to a numeric (float) type by removing '$' and commas.
+- **Missing Values**: Filled missing values in `Social_Media_Influence` and `Engagement_with_Ads` columns with 'None' to treat them as a distinct category.
+- **Categorical Ordering**: Converted `Income_Level`, `Discount_Sensitivity`, and `Social_Media_Influence` into ordered categorical types for better representation and potential ordinal encoding in ML.
+- **Boolean Conversion**: Transformed `Discount_Used` and `Customer_Loyalty_Program_Member` columns to boolean types.
+- **Derived Feature**: Created a new feature `Total_Spend` by multiplying `Purchase_Amount` and `Frequency_of_Purchase` to capture overall customer value.
 
-- **Predict Discount Usage** using customer behavioral data
-- **Identify Key Drivers** of purchasing decisions
-- **Generate Visual Insights** for stakeholder presentations
-- **Provide Data-Driven Recommendations** for business strategy
+## Visualizations
 
----
+### Visualization 1: Customer Age Distribution
+This histogram shows the distribution of customer ages, with a Kernel Density Estimate (KDE) overlay to visualize the density curve. Bars are color-coded by age group, providing quick insights into the demographic spread of the customer base. A median age line is included for reference.
 
-## 📁 Project Structure
+![Customer Age Distribution](outputs/visualizations/viz_age_distribution.png)
 
-```
-📦 E-Commerce Analysis
-├── ecommerce_visualizations.ipynb    # Google Colab notebook (10 visualizations)
-├── test_improved_models.py           # ML model comparison script
-├── Ecommerce_Consumer_Behavior_Analysis_Data.csv
-├── outputs/
-│   └── visualizations/               # 10 PNG charts
-│       ├── viz_age_distribution.png
-│       ├── viz_income_vs_purchase.png
-│       ├── viz_top10_categories.png
-│       └── ... (7 more)
-└── BUSINESS_RECOMMENDATIONS.md       # Strategic insights
-```
+### Visualization 2: Income Level vs Purchase Behaviour
+This section features two plots. The first is a box plot illustrating the distribution of `Purchase_Amount` across different `Income_Level` categories (Low, Middle, High). The second bar chart displays the average `Total_Spend` for each income level, highlighting how income correlates with spending habits.
 
----
+![Income Level vs Purchase Behaviour](outputs/visualizations/viz_income_vs_purchase.png)
 
-## 🚀 Quick Start
+### Visualization 3: Top 10 Product Categories
+This visualization identifies the most popular product categories based on purchase frequency and average purchase amount. Two horizontal bar charts are presented: one for the count of purchases per category and another for the average spend within each category. This helps in understanding which products are most frequently bought and which generate higher revenue per purchase.
 
-### **Option 1: Google Colab (Recommended)**
-1. Upload `ecommerce_visualizations.ipynb` to Google Colab
-2. Upload dataset when prompted
-3. Run all cells → generates 10 visualizations
-4. Download ZIP archive with all charts
+![Top 10 Product Categories](outputs/visualizations/viz_top10_categories.png)
 
-### **Option 2: Local Python**
-```bash
-# Install dependencies
-pip install pandas numpy matplotlib seaborn scikit-learn imbalanced-learn catboost scipy
+### Visualization 4: Purchase Channel Breakdown
+This section uses a donut chart to show the market share of different purchase channels (e.g., Online, In-Store, Mixed). Alongside, a bar chart illustrates the average purchase amount for each channel, providing insights into channel effectiveness and customer preferences.
 
-# Run visualization generator
-jupyter notebook ecommerce_visualizations.ipynb
+![Purchase Channel Breakdown](outputs/visualizations/viz_channel_breakdown.png)
 
-# Or test ML models
-python test_improved_models.py
-```
+### Visualization 5: Average Purchase Amount: Satisfaction × Income Level
+This heatmap visualizes the average `Purchase_Amount` across different levels of `Customer_Satisfaction` and `Income_Level`. It helps identify segments of customers (e.g., high-income, highly satisfied) who tend to make larger purchases.
 
----
+![Average Purchase Amount: Satisfaction × Income Level](outputs/visualizations/viz_satisfaction_heatmap.png)
 
-## 📊 Dataset Features
+### Visualization 6: Loyalty Program Members vs Spending
+This visualization explores the relationship between customer loyalty program membership and spending habits. A violin plot compares the `Purchase_Amount` distributions between members and non-members. A scatter plot further shows the correlation between `Frequency_of_Purchase` and `Total_Spend` for both groups, highlighting the value of loyal customers.
 
-- **Rows:** 1,000 customers
-- **Features:** 27 attributes
-  - Demographics: Age, Gender, Income Level, Location
-  - Behavioral: Purchase Amount, Frequency, Category
-  - Engagement: Social Media Influence, Ad Engagement
-  - Loyalty: Program Membership, Satisfaction Score
-  - Preferences: Discount Sensitivity, Purchase Intent
-- **Target:** `Discount_Used` (Binary: Yes/No)
+![Loyalty Program Members vs Spending](outputs/visualizations/viz_loyalty_spending.png)
 
----
+### Visualization 7: Social Media Influence on Purchasing
+This section examines the impact of social media influence on customer behavior. It includes a bar chart showing the count of customers across different levels of social media influence (None, Low, Medium, High), and another bar chart illustrating the average purchase amount for each influence level.
 
-## 🤖 ML Models Tested
+![Social Media Influence on Purchasing](outputs/visualizations/viz_social_media_influence.png)
 
-| Model | Accuracy | F1-Score | Status |
-|-------|----------|----------|--------|
-| Baseline Random Forest | 50.5% | 0.552 | Baseline |
-| Balanced Random Forest | 50.5% | 0.154 | No improvement |
-| SMOTE + Random Forest | **51.5%** | **0.565** | Best |
-| CatBoost | 51.5% | 0.531 | Tied best |
+### Visualization 8: Discount Sensitivity Analysis
+This visualization analyzes customer sensitivity to discounts. One bar chart displays the percentage of customers who used a discount within each sensitivity group (`Not Sensitive`, `Somewhat Sensitive`, `Very Sensitive`). Another grouped bar chart compares the average purchase amount for those who used a discount versus those who didn't, across the sensitivity groups.
 
-**Key Findings:**
-- ✅ Removed feature leakage (`Total_Spend`)
-- ⚠️ Models perform near random baseline (50-52%)
-- 🔍 Discount usage appears weakly correlated with available features
-- 💡 Suggests need for external data or different modeling approach
+![Discount Sensitivity Analysis](outputs/visualizations/viz_discount_sensitivity.png)
 
----
+## Machine Learning Model
 
-## 🎨 10 Generated Visualizations
+To understand and predict `Discount_Used`, a CatBoost Classifier was trained. The ML pipeline involved several key steps:
+- **Feature Engineering**: Irrelevant columns like `Customer_ID`, `Location`, and `Time_of_Purchase` were dropped. Boolean features were converted to integers.
+- **Label Encoding**: All categorical and object type features were converted into numerical representations using Label Encoding.
+- **Data Splitting**: The dataset was split into training and testing sets (80/20 ratio) with stratification to maintain class proportions of the target variable.
+- **Feature Scaling**: Numerical features were scaled using `StandardScaler` to normalize their ranges.
+- **Model Training**: A CatBoost Classifier was chosen for its robustness with categorical features and ability to handle class imbalance (using class weights) to predict `Discount_Used`.
 
-1. **Age Distribution** — Customer demographics with KDE overlay
-2. **Income vs Purchase** — Box plots + average spend by income tier
-3. **Top 10 Categories** — Frequency & spending by product category
-4. **Channel Breakdown** — Purchase channel distribution (donut + bar)
-5. **Satisfaction Heatmap** — Satisfaction × Income correlation
-6. **Loyalty Spending** — Members vs non-members comparison
-7. **Social Media Influence** — Impact on purchase behavior
-8. **Discount Sensitivity** — Usage patterns & spend comparison
-9. **Confusion Matrix** — Model performance metrics
-10. **Feature Importance** — Top 15 predictive features (CatBoost)
+### Visualization 9: CatBoost — Confusion Matrix & Performance Metrics
+This section provides a detailed evaluation of the trained CatBoost model. A confusion matrix heatmap visually represents the model's true positives, true negatives, false positives, and false negatives. A bar chart displays key classification metrics such as Accuracy, Precision, Recall, and F1-Score, with a random baseline for context.
 
-**All charts use professional dark theme** with consistent color palette.
+![CatBoost — Confusion Matrix & Performance Metrics](outputs/visualizations/viz_confusion_matrix.png)
 
----
+### Visualization 10: Top 15 Feature Importances — CatBoost Model
+This horizontal bar chart illustrates the relative importance of features in the CatBoost model's prediction of `Discount_Used`. The top 15 features are displayed, helping to identify which aspects of consumer behavior most significantly influence discount usage.
 
-## 📈 Key Insights
+![Top 15 Feature Importances — CatBoost Model](outputs/visualizations/viz_feature_importance.png)
 
-### **Customer Segmentation**
-- **Age:** Broad distribution (18-70), median ~44 years
-- **Income:** Balanced across Low/Middle/High tiers
-- **Loyalty:** ~48% enrolled in loyalty program
+## Setup and Usage
 
-### **Purchase Behavior**
-- **Average Purchase:** $272
-- **Top Categories:** Electronics, Clothing, Home Goods
-- **Channels:** Online dominates (65%), followed by in-store (25%)
+To run this notebook and reproduce the analysis and visualizations, follow these steps:
 
-### **Discount Patterns**
-- **52.1%** of customers use discounts regularly
-- **High sensitivity** customers show 85% discount usage rate
-- **Social media influence** has moderate impact on purchasing
-
-### **Model Performance**
-- **Weak predictive power** suggests discount usage is largely behavioral/external
-- **Top features:** Purchase Amount, Age, Frequency, Income Level
-- **Recommendation:** Collect additional data (browsing history, email engagement)
-
----
-
-## 💼 Business Applications
-
-1. **Marketing Campaigns** — Target high-sensitivity segments with personalized offers
-2. **Inventory Planning** — Stock popular categories based on purchase patterns
-3. **Channel Strategy** — Optimize online experience (primary channel)
-4. **Loyalty Programs** — Redesign to increase member engagement & spending
-5. **Pricing Strategy** — Use insights for dynamic pricing and promotion timing
-
----
-
-## 🔧 Technical Stack
-
-- **Python 3.11+**
-- **Data:** pandas, numpy
-- **ML:** scikit-learn, imbalanced-learn, CatBoost
-- **Viz:** matplotlib, seaborn
-- **Stats:** scipy
-
----
-
-## 📝 Next Steps
-
-### **To Improve Model Accuracy (50% → 70%+):**
-1. **Feature Engineering** — Create interaction terms, time-based features
-2. **External Data** — Add browsing history, email clicks, cart abandonment
-3. **Advanced Algorithms** — Try AutoML (TPOT, mljar-supervised)
-4. **Ensemble Stacking** — Combine multiple models
-5. **Hyperparameter Tuning** — GridSearchCV optimization
-
-### **For Business Impact:**
-- Implement A/B testing based on discount sensitivity segments
-- Deploy real-time prediction API for personalized offers
-- Create dashboard for marketing team (Tableau/Power BI)
-
----
-
-## 👥 Team Structure
-
-**For Hackathon Presentation:**
-- **Member 1 (Data Engineer):** Data cleaning, preprocessing, feature engineering
-- **Member 2 (ML Engineer):** Model development, evaluation, optimization
-- **Member 3 (Analyst):** Visualizations, insights, business recommendations
-
----
-
-## 📄 License
-
-MIT License — Free for educational and commercial use
-
----
-
-## 🎉 Results Summary
-
-✅ **10 professional visualizations** generated  
-✅ **4 ML models** tested and compared  
-✅ **Business recommendations** documented  
-✅ **Google Colab ready** for presentation  
-✅ **Reproducible pipeline** with clear documentation  
-
-**Project Status:** ✅ Complete and presentation-ready!
-
----
-
-*For detailed business recommendations, see [BUSINESS_RECOMMENDATIONS.md](BUSINESS_RECOMMENDATIONS.md)*
+1.  **Install Dependencies**: Execute the first code cell (`Section 1`) to install all necessary Python libraries (e.g., `imbalanced-learn`, `catboost`, `scipy`).
+2.  **Import Libraries**: Run the `Section 2` code cell to import all required libraries and set up plotting themes.
+3.  **Upload Dataset**: In `Section 3`, upload your CSV dataset. The notebook expects a file named `Ecommerce_Consumer_Behavior_Analysis_Data.csv` or similar structure. If your file has a different name, ensure the `filename` variable is updated accordingly after upload.
+4.  **Data Cleaning**: Execute the `Section 4` cell to perform the necessary data cleaning and preprocessing steps.
+5.  **Create Output Directory**: Run `Section 5` to create the `outputs/visualizations` directory where all generated plots will be saved.
+6.  **Generate Visualizations**: Execute cells in `Section 6` through `Section 13` sequentially to generate each of the 8 exploratory visualizations.
+7.  **Train ML Model**: Run `Section 14` to execute the Machine Learning pipeline, which trains the CatBoost model.
+8.  **Generate ML Visualizations**: Execute cells in `Section 15` and `Section 16` to generate the Confusion Matrix and Feature Importance plots related to the ML model.
+9.  **Download Output**: Finally, run `Section 17` to compress all generated visualizations into a ZIP file and download it.
